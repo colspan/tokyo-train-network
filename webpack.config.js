@@ -1,3 +1,5 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
 const webpack = require('webpack');
 
 const CONFIG = {
@@ -8,26 +10,37 @@ const CONFIG = {
   },
 
   output: {
-    library: 'App'
+    library: 'App',
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'dist'),
   },
 
   module: {
     rules: [
       {
-        // Transpile ES6 to ES5 with babel
-        // Remove if your app does not use JSX or you don't need to support old browsers
         test: /\.js$/,
         loader: 'babel-loader',
         exclude: [/node_modules/],
         options: {
-          presets: ['@babel/preset-react']
+          presets: ['@babel/preset-react'],
         }
-      }
+      },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader',
+        ]
+      },
     ]
   },
 
-  plugins: [new webpack.EnvironmentPlugin(['NODE_ENV', 'DEBUG'])]
+  plugins: [
+    new webpack.EnvironmentPlugin(['NODE_ENV', 'DEBUG']),
+    new HtmlWebpackPlugin({
+      template: 'src/index.html'
+    })
+  ]
 };
 
-// This line enables bundling against src in this repo rather than installed module
 module.exports = CONFIG;

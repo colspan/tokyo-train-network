@@ -227,8 +227,8 @@ export default class App extends Component {
 
 export function renderToDOM(container) {
   // render(<App />, container);
-
-  fetch('./data/railroad_path.json')
+  const url = 'https://raw.githubusercontent.com/colspan/tokyo-train-network/master/data/railroad_path.json';
+  fetch(url)
     .then(res => res.json())
     .then(data => {
       render(<App trainNetwork={data} />, container)
