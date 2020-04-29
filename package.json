@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
+    "deploy": "gh-pages -d dist",
     "start-local": "webpack-dev-server --env.local --progress --hot --open",
     "start": "webpack-dev-server --progress --hot --open"
   },
