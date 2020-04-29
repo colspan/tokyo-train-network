@@ -127,3 +127,28 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+build/
+dist/
+**/*.min.js
+node_modules/
+coverage/
+test/**/*-failed.png
+.nyc_output/
+.reify-cache/
+
+dist-demo/
+dist-bundle.js
+
+*/**/yarn.lock
+yarn-error.log
+package-lock.json
+
+.vscode/
+.project
+.idea
+.DS_Store
+*.zip
+*.rar
+*.log
+.exit_code

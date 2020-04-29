@@ -1,0 +1,10 @@
+geopandas
+geopy
+jaconv
+jupyter
+networkx==2.2
+numpy
+matplotlib
+mesa
+pandas
+xlrd
