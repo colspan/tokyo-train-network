@@ -6,6 +6,23 @@ import { GeoJsonLayer } from '@deck.gl/layers';
 import { scaleLinear, scaleThreshold } from 'd3-scale';
 import colormap from 'colormap';
 
+
+const TimeSelector = (props) => {
+  return (
+    <div id="time-selector">
+      <input
+        type="range"
+        value={props.value}
+        min={0}
+        max={props.max}
+        onChange={props.onChange}
+      >
+      </input>
+      {props.currentText}
+    </div>
+  );
+}
+
 const edgeColor = colormap({
   colormap: 'inferno',
   nshades: 256,
@@ -14,7 +31,7 @@ const edgeColor = colormap({
 }).map(d => [d[0], d[1], d[2], 255]);
 const edgeScale = scaleLinear()
   .clamp(true)
-  .domain([0, 15000])
+  .domain([0, 40000])
   .range([0, 255]);
 const CAPACITY_TIME_RANGES = [
   'capacity_0200_0659',
@@ -59,7 +76,7 @@ export default class App extends Component {
   }
 
   _getLineColor(f, timeIndex) {
-    const value = Math.abs(f.properties[`${CAPACITY_TIME_RANGES[timeIndex]}_up`] - f.properties[`${CAPACITY_TIME_RANGES[timeIndex]}_down`]);
+    const value = Math.abs(f.properties[`${CAPACITY_TIME_RANGES[timeIndex]}_up`] + f.properties[`${CAPACITY_TIME_RANGES[timeIndex]}_down`]);
     if (value) {
       return edgeColor[Math.floor(edgeScale(value))];
     }
@@ -68,7 +85,7 @@ export default class App extends Component {
     }
   }
   _getLineWidth(f, timeIndex) {
-    const value = Math.abs(f.properties[`${CAPACITY_TIME_RANGES[timeIndex]}_up`] - f.properties[`${CAPACITY_TIME_RANGES[timeIndex]}_down`]);
+    const value = Math.abs(f.properties[`${CAPACITY_TIME_RANGES[timeIndex]}_up`] + f.properties[`${CAPACITY_TIME_RANGES[timeIndex]}_down`]);
     if (value) {
       return edgeScale(value) / 255 * 30 + 10;
     }
@@ -83,8 +100,8 @@ export default class App extends Component {
   }
 
   _renderLayers() {
-    const { trainNetwork, year } = this.props;
-    const { incidents, fatalities } = this.state;
+    const { trainNetwork } = this.props;
+    const { timeIndex } = this.state;
     return [
       new GeoJsonLayer({
         id: 'geojson',
@@ -104,13 +121,13 @@ export default class App extends Component {
         onHover: this._onHover,
 
         updateTriggers: {
-          getLineColor: { year },
-          getLineWidth: { year }
+          getLineColor: { timeIndex },
+          getLineWidth: { timeIndex }
         },
 
         transitions: {
-          getLineColor: 1000,
-          getLineWidth: 1000
+          getLineColor: 50,
+          getLineWidth: 50
         }
       })
     ];
@@ -181,23 +198,32 @@ export default class App extends Component {
     };
 
     return (
-      <DeckGL
-        layers={this._renderLayers()}
-        pickingRadius={5}
-        initialViewState={initialViewState}
-        controller={true}
-      >
-        <StaticMap
-          reuseMaps
-          mapStyle={mapStyle}
-          preventStyleDiffing={true}
-        />
+      <div>
+        <DeckGL
+          layers={this._renderLayers()}
+          pickingRadius={5}
+          initialViewState={initialViewState}
+          controller={true}
+        >
+          <StaticMap
+            reuseMaps
+            mapStyle={mapStyle}
+            preventStyleDiffing={true}
+          />
 
-        {this._renderTooltip}
-      </DeckGL>
+          {this._renderTooltip}
+        </DeckGL>
+        <TimeSelector
+          max={CAPACITY_TIME_RANGES.length}
+          value={this.state.timeIndex}
+          currentText={CAPACITY_TIME_RANGES[this.state.timeIndex]}
+          onChange={e => this.setState({ timeIndex: e.target.value })}
+        />
+      </div>
     );
   }
 }
+
 
 export function renderToDOM(container) {
   // render(<App />, container);
