@@ -29,10 +29,12 @@ const edgeColor = colormap({
   format: 'rba',
   alpha: 1
 }).map(d => [d[0], d[1], d[2], 255]);
+
 const edgeScale = scaleLinear()
   .clamp(true)
   .domain([0, 40000])
   .range([0, 255]);
+
 const CAPACITY_TIME_RANGES = [
   'capacity_0200_0659',
   'capacity_0700_0729',
@@ -68,11 +70,6 @@ export default class App extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // if (nextProps.accidents !== this.props.accidents) {
-    //   this.setState({
-    //     ...this._aggregateAccidents(nextProps.accidents)
-    //   });
-    // }
   }
 
   _getLineColor(f, timeIndex) {
@@ -95,8 +92,7 @@ export default class App extends Component {
   }
 
   _onHover({ x, y, object }) {
-    console.log(x, y, object);
-    // this.setState({ x, y, hoveredObject: object });
+    this.setState({ x, y, hoveredObject: object });
   }
 
   _renderLayers() {
@@ -134,37 +130,30 @@ export default class App extends Component {
   }
 
   _renderTooltip() {
-    //   const {hoveredObject, x, y, fatalities, incidents} = this.state;
-    //   const {year} = this.props;
+    const { hoveredObject, x, y, fatalities, incidents } = this.state;
+    if (!hoveredObject) {
+      return null;
+    }
 
-    //   if (!hoveredObject) {
-    //     return null;
-    //   }
+    const props = hoveredObject.properties;
 
-    //   const props = hoveredObject.properties;
-    //   const key = getKey(props);
-    //   const f = fatalities[year][key];
-    //   const r = incidents[year][key];
-
-    //   const content = r ? (
-    //     <div>
-    //       <b>{f}</b> people died in <b>{r}</b> crashes on{' '}
-    //       {props.type === 'SR' ? props.state : props.type}-{props.id} in <b>{year}</b>
-    //     </div>
-    //   ) : (
-    //     <div>
-    //       no accidents recorded in <b>{year}</b>
-    //     </div>
-    //   );
-
-    //   return (
-    //     <div className="tooltip" style={{left: x, top: y}}>
-    //       <big>
-    //         {props.name} ({props.state})
-    //       </big>
-    //       {content}
-    //     </div>
-    //   );
+    const pathName = (<big>
+      {props.route_station_jp_start.split('_')[1]} - {props.route_station_jp_end.split('_')[1]}
+    </big>);
+    // 
+    const currentTimeRange = CAPACITY_TIME_RANGES[this.state.timeIndex];
+    const content = (<div>
+      {currentTimeRange}_up : {props[`${currentTimeRange}_up`]}<br />
+      {currentTimeRange}_down : {props[`${currentTimeRange}_down`]}
+    </div>
+    );
+    console.log(props);
+    return (
+      <div className="tooltip" style={{ left: x, top: y }}>
+        {pathName}
+        {content}
+      </div>
+    );
   }
 
   render() {
@@ -208,7 +197,7 @@ export default class App extends Component {
           <StaticMap
             reuseMaps
             mapStyle={mapStyle}
-            preventStyleDiffing={true}
+            preventStyleDiffing={false}
           />
 
           {this._renderTooltip}
