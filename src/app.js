@@ -163,8 +163,7 @@ export default class App extends Component {
         'cyberjapandata-tiles': {
           type: 'raster',
           tiles: [
-            // 'https://cyberjapandata.gsi.go.jp/xyz/english/{z}/{x}/{y}.png',
-            'https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg',
+            'https://cyberjapandata.gsi.go.jp/xyz/english/{z}/{x}/{y}.png',
           ],
           tileSize: 256,
           'attribution': '',
@@ -177,6 +176,11 @@ export default class App extends Component {
           source: 'cyberjapandata-tiles',
           minzoom: 5,
           maxzoom: 22,
+          paint: {
+            'raster-hue-rotate': 0,
+            'raster-saturation': -0.9,
+            'raster-opacity': 0.8,
+          }
         }
       ]
     };
